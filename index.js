@@ -26,6 +26,27 @@ const template = `- name: pusher
       defaultValue:
       placeholder: Input your token
       inputType: textarea
+    array:
+      name: arrayName
+      desp: This is array
+      required: true
+      type: array
+      body:
+        - name: id
+          desp: This is id
+          required: true
+          type: text
+          defaultValue: 111
+          placeholder: Input your id
+          inputType: number
+        - name: textarea
+          desp: This is textarea
+          required: true
+          type: text
+          defaultValue:
+          placeholder: Input your token
+          inputType: textarea
+          repeat: true
 - name: test
   type: yaml
   body:
@@ -84,7 +105,7 @@ const template = `- name: pusher
 
 const templateJson = jsyaml.load(template);
 
-templateJson.map((singleConfig, index) => {
+templateJson.forEach((singleConfig, index) => {
   // 多配置文件处理
   $('div.container').append(`<form id="${singleConfig.name}-config" style="display:none;" data-type="${singleConfig.type || singleConfig.filename.split('.').slice(0, -1).join('.') }" data-filename="${singleConfig.filename || `${singleConfig.name}.${singleConfig.type}`}"></form>`);
   if (index === 0) {
@@ -106,11 +127,26 @@ templateJson.map((singleConfig, index) => {
   $('#single-config-name>ul').append(singleConfigList);
 
   // 配置项处理
-  Object.entries(singleConfig.body).map(([name, options]) => {
+  Object.entries(singleConfig.body).forEach(([name, options]) => {
     generateBody(singleConfig.name, name, options);
   });
 
 });
+
+$('button.repeat').on('click', repeatButton);
+function repeatButton(event) {
+  parent = $(event.target).parent().parent();
+  const id = $(event.target).attr('data-id');
+  const nameId = parent.parent().children().length;
+  console.log(nameId);
+  const newId = `${id}-${nameId}`;
+
+  parent.after(parent.prop('outerHTML')
+    .replaceAll(`"${id}"`, `"${newId}"`)
+    .replaceAll(`"${id}Help"`, `"${newId}Help"`)
+    .replaceAll(`name="${$(event.target).attr('data-name')}"`, `name="${nameId}"`));
+  $('button.repeat').off('click', repeatButton).on('click', repeatButton);
+}
 
 const generatorButton = $(`<button class="btn btn-primary" type="submit">Generator</button>`);
 /*
@@ -153,6 +189,11 @@ function generateData(parent) {
       config[$(element).attr('name')] = generateData($(element));
       return;
     }
+    if ($(element).attr('type') === 'array') {
+      const arrayConfig = generateData($(element));
+      config[$(element).attr('name')] = Object.keys(arrayConfig).sort((a, b) => a - b).map((e) => arrayConfig[e]);
+      return;
+    }
     if ($(element).attr('type') === 'checkbox') {
       config[$(element).attr('name')] = $(element).prop('checked');
       return;
@@ -167,10 +208,14 @@ function generateData(parent) {
 }
 function generateBody(preId, name, options) {
   const id = `${preId}-${name}`;
+
+  // todo: 重复只改了textarea
+  // todo: 直接生成重复次数
+  // text
   if (options.type === 'text') {
     if (options.inputType === 'textarea') {
       $(`#${preId}-config`).append(`<div class="mb-3">
-    <label for="${id}" class="form-label">${options.name || name}</label>
+    <label for="${id}" class="form-label">${options.name || name}${options.repeat ? `<button type="button" class="btn btn-outline-primary repeat" data-id="${id}" data-name="${name}" style="--bs-btn-padding-y: 0rem; --bs-btn-padding-x: .3rem;--bs-btn-font-size: .55rem;border-radius: 50%;margin-left: .5rem;">+</button>` : ''}</label>
     <textarea type="text" class="form-control item" id="${id}" name="${name}" data-parent="${preId}"
     ${options.desp ? ` aria-describedby="${id}Help"` : ''}
     ${options.placeholder ? ` placeholder="${options.placeholder}"` : ''}
@@ -181,6 +226,7 @@ function generateBody(preId, name, options) {
   </div>`);
       return;
     }
+
     $(`#${preId}-config`).append(`<div class="mb-3">
     <label for="${id}" class="form-label">${options.name || name}</label>
     <input type="${options.inputType || 'text'}" class="form-control" id="${id}" name="${name}" data-parent="${preId}"
@@ -194,6 +240,7 @@ function generateBody(preId, name, options) {
     return;
   }
 
+  // boolean
   if (options.type === 'boolean') {
     $(`#${preId}-config`).append(`<div class="form-check form-switch mb-3">
   <input class="form-check-input" type="checkbox" role="switch" id="${id}" name="${name}" data-parent="${preId}"
@@ -206,6 +253,7 @@ function generateBody(preId, name, options) {
     return;
   }
 
+  // single-select
   if (options.type === 'single-select') {
     $(`#${preId}-config`).append(`<div class="mb-3">
       <label class="form-select-label" for="${id}">${options.name || name}</label>
@@ -218,6 +266,7 @@ function generateBody(preId, name, options) {
     return;
   }
 
+  // multi-select
   if (options.type === 'multi-select') {
     $(`#${preId}-config`).append(`<div class="mb-3">
       <label class="form-select-label" for="${id}">${options.name || name}</label>
@@ -230,6 +279,7 @@ function generateBody(preId, name, options) {
     return;
   }
 
+  // object
   if (options.type === 'object') {
     $(`#${preId}-config`).append(`<div class="card card-body" style="padding-bottom:0;margin-bottom:1rem;"><p style="text-align:center;">
   <a class="btn btn-primary" data-bs-toggle="collapse" href="#${preId}-${name}-config" role="button" aria-expanded="true" aria-controls="${preId}-${name}-config"
@@ -238,7 +288,21 @@ function generateBody(preId, name, options) {
   </a>
     ${options.desp ? `<div id="${preId}-${name}-configHelp" class="form-text">${options.desp}</div>` : ''}
 </p><div id="${preId}-${name}-config" class="collapse show" name="${name}" type="object" data-parent="${preId}"></div></div>`);
-    Object.entries(options.body).map(([subName, subOptions]) => {
+    Object.entries(options.body).forEach(([subName, subOptions]) => {
+      generateBody(`${preId}-${name}`, subName, subOptions);
+    });
+  }
+
+  // array
+  if (options.type === 'array') {
+    $(`#${preId}-config`).append(`<div class="card card-body" style="padding-bottom:0;margin-bottom:1rem;"><p style="text-align:center;">
+  <a class="btn btn-primary" data-bs-toggle="collapse" href="#${preId}-${name}-config" role="button" aria-expanded="true" aria-controls="${preId}-${name}-config"
+  data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="custom-tooltip" data-bs-title="Click to hide/show the options about ${options.name || name}.">
+    ${options.name || name}
+  </a>
+    ${options.desp ? `<div id="${preId}-${name}-configHelp" class="form-text">${options.desp}</div>` : ''}
+</p><div id="${preId}-${name}-config" class="collapse show" name="${name}" type="array" data-parent="${preId}"></div></div>`);
+    options.body.forEach((subOptions, subName) => {
       generateBody(`${preId}-${name}`, subName, subOptions);
     });
   }

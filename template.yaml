@@ -26,6 +26,27 @@
       defaultValue:
       placeholder: Input your token
       inputType: textarea
+    array:
+      name: array
+      desp: This is array
+      required: true
+      type: array
+      body:
+        - name: id
+          desp: This is id
+          required: true
+          type: text
+          defaultValue: 111
+          placeholder: Input your id
+          inputType: number
+        - name: textarea
+          desp: This is textarea
+          required: true
+          type: text
+          defaultValue:
+          placeholder: Input your token
+          inputType: textarea
+          repeat: # 数字/自定义
 - name: test
   type: json
   filename: test.json
