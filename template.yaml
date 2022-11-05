@@ -1,0 +1,40 @@
+- name: pusher
+  type: json
+  filename: pusher.json
+  body:
+    token:
+      name: Token
+      desp: This is token
+      required: true
+      type: text
+      defaultValue:
+      placeholder: Input your token
+      inputType: text
+    textarea:
+      name: textarea
+      desp: This is textarea
+      required: true
+      type: text
+      defaultValue:
+      placeholder: Input your token
+      inputType: textarea
+- name: test
+  type: json
+  filename: test.json
+  body:
+    token:
+      name: Test
+      desp: Testing
+      required: true
+      type: boolean
+      defaultValue:
+    select:
+      name: Select
+      desp: Testing
+      required: false
+      type: single-select
+      defaultValue: 2
+      options:
+        - a
+        - 2
+        - 3
