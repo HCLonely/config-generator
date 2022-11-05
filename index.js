@@ -10,6 +10,14 @@ const template = `- name: pusher
       defaultValue:
       placeholder: Input your token
       inputType: text
+    id:
+      name: id
+      desp: This is id
+      required: true
+      type: text
+      defaultValue: 111
+      placeholder: Input your id
+      inputType: number
     textarea:
       name: textarea
       desp: This is textarea
@@ -54,11 +62,11 @@ const template = `- name: pusher
 `;
 
 const templateJson = jsyaml.load(template);
-
+console.log(templateJson);
 
 templateJson.map((singleConfig, index) => {
   // 多配置文件处理
-  $('div.container').append(`<form id="${singleConfig.name}-config" style="display:none;"></form>`);
+  $('div.container').append(`<form id="${singleConfig.name}-config" style="display:none;" data-type="${singleConfig.type || singleConfig.filename.split('.').slice(0, -1).join('.') }" data-filename="${singleConfig.filename || `${singleConfig.name}.${singleConfig.type}`}"></form>`);
   if (index === 0) {
     $('#single-config-name>button').attr('data-name', singleConfig.name);
     $('#single-config-name>button').text(singleConfig.name);
@@ -147,7 +155,7 @@ templateJson.map((singleConfig, index) => {
 });
 
 const generatorButton = $(`<button class="btn btn-primary" onclick="return false;">Generator</button>`);
-generatorButton.click(function() {
+generatorButton.click(function () {
   const form = $(this).parent();
   const config = {};
   form.find('[name]').map((index, element) => {
@@ -155,8 +163,36 @@ generatorButton.click(function() {
       config[$(element).attr('name')] = $(element).prop('checked');
       return;
     }
+    if ($(element).attr('type') === 'number') {
+      config[$(element).attr('name')] = parseFloat($(element).val(), 10);
+      return;
+    }
     config[$(element).attr('name')] = $(element).val();
   });
+
+  if (form.attr('data-type') === 'json') {
+    download(JSON.stringify('config', null, 2));
+    return;
+  }
   console.log(config);
+  console.log(jsyaml.dump(config));
 })
 $('form').append(generatorButton);
+
+function download(data, filename, type) {
+  const file = new Blob([data], { type });
+  if (window.navigator.msSaveOrOpenBlob) {
+    window.navigator.msSaveOrOpenBlob(file, filename);
+  } else {
+    const a = document.createElement("a"),
+      url = URL.createObjectURL(file);
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(function () {
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+    }, 0);
+  }
+}

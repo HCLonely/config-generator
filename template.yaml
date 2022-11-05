@@ -10,6 +10,14 @@
       defaultValue:
       placeholder: Input your token
       inputType: text
+    id:
+      name: id
+      desp: This is id
+      required: true
+      type: text
+      defaultValue: 111
+      placeholder: Input your id
+      inputType: number
     textarea:
       name: textarea
       desp: This is textarea
