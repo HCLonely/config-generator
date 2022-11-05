@@ -46,3 +46,25 @@
         - a
         - 2
         - 3
+    object:
+      name: object
+      desp: object
+      required: true
+      type: object
+      body:
+        token:
+          name: Test
+          desp: Testing
+          required: true
+          type: boolean
+          defaultValue:
+        select:
+          name: Select
+          desp: Testing
+          required: false
+          type: single-select
+          defaultValue: 2
+          options:
+            - a
+            - 2
+            - 3
