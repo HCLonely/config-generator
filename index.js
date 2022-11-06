@@ -39,6 +39,19 @@ const template = `- name: pusher
           defaultValue: 111
           placeholder: Input your id
           inputType: number
+        - name: arrayName
+          desp: This is array
+          required: true
+          type: array
+          repeat: 3
+          body:
+            - name: id
+              desp: This is id
+              required: true
+              type: text
+              defaultValue: 111
+              placeholder: Input your id
+              inputType: number
         - name: textarea
           desp: This is textarea
           required: true
@@ -245,24 +258,44 @@ $('form').append(generatorButton).submit(function (event) {
   }
 });
 
-function generateData(parent) {
-  const config = {};
+function generateData(parent, isArray) {
+  const config = isArray ? [] : {};
   parent.find(`[data-parent="${parent.attr('id').replace('config-', '')}"]`).map((index, element) => {
     if ($(element).attr('type') === 'object') {
+      if (isArray) {
+        config.push(generateData($(element)));
+        return;
+      }
       config[$(element).attr('name')] = generateData($(element));
       return;
     }
     if ($(element).attr('type') === 'array') {
-      const arrayConfig = generateData($(element));
-      config[$(element).attr('name')] = Object.keys(arrayConfig).sort((a, b) => a - b).map((e) => arrayConfig[e]);
+      const arrayConfig = generateData($(element), true);
+      if (isArray) {
+        config.push(arrayConfig);
+        return;
+      }
+      config[$(element).attr('name')] = arrayConfig;
       return;
     }
     if ($(element).attr('type') === 'checkbox') {
+      if (isArray) {
+        config.push($(element).prop('checked'));
+        return;
+      }
       config[$(element).attr('name')] = $(element).prop('checked');
       return;
     }
     if ($(element).attr('type') === 'number') {
+      if (isArray) {
+        config.push(parseFloat($(element).val(), 10));
+        return;
+      }
       config[$(element).attr('name')] = parseFloat($(element).val(), 10);
+      return;
+    }
+    if (isArray) {
+      config.push($(element).val());
       return;
     }
     config[$(element).attr('name')] = $(element).val();
@@ -273,7 +306,6 @@ function generateBody(preId, name, options, parentType) {
   const id = `${preId}-${name}`;
 
   // todo: 重复嵌套array
-  // todo: 直接生成重复次数
   // text
   if (options.type === 'text') {
     if (options.inputType === 'textarea') {
@@ -368,8 +400,16 @@ function generateBody(preId, name, options, parentType) {
     ${options.desp ? `<div id="configHelp-${preId}-${name}" class="form-text">${options.desp}</div>` : ''}
 </p><div id="config-${preId}-${name}" class="collapse show" name="${name}" type="array" data-parent="${preId}"></div></div>`);
 
-  // 直接处理重复
+    const arrayBody = [];
     options.body.forEach((subOptions, subName) => {
+      if (typeof subOptions.repeat === 'number' && subOptions.repeat > 0) {
+        arrayBody.push(...(new Array(subOptions.repeat).fill(subOptions)));
+        return;
+      }
+
+      arrayBody.push(subOptions);
+    });
+    arrayBody.forEach((subOptions, subName) => {
       generateBody(`${preId}-${name}`, subName, subOptions, options.type);
     });
   }
