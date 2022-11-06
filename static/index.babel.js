@@ -1,10 +1,10 @@
 (async () => {
-  const fileLink = Object.fromEntries(window.location.search.replace(/^\?/, '').split('&').map((e) => e.split('='))).fileLink;
+  const fileLink = Object.fromEntries(window.location.search.replace(/^\?/, '').split('&').map(e => e.split('='))).fileLink;
   if (!fileLink) {
     // todo: home page
     return;
   }
-  const [status, template] = await axios.get(fileLink).then((response) => [true, response.data]).catch((error) => {
+  const [status, template] = await axios.get(fileLink).then(response => [true, response.data]).catch(error => {
     console.error(error);
     return [false, error];
   });
@@ -13,7 +13,6 @@
     return;
   }
   const templateJson = formatChecker(template);
-
   templateJson.forEach((singleConfig, index) => {
     // 多配置文件处理
     $('div.container').append(`<form id="config-${singleConfig.name}" style="display:none;" data-type="${singleConfig.type || singleConfig.filename.split('.').slice(0, -1).join('.')}" data-filename="${singleConfig.filename || `${singleConfig.name}.${singleConfig.type}`}"></form>`);
@@ -39,9 +38,7 @@
     Object.entries(singleConfig.body).forEach(([name, options]) => {
       generateBody(singleConfig.name, name, options);
     });
-
   });
-
   $('button.repeat').on('click', repeatButton);
   function repeatButton(event) {
     parent = $(event.target).parent().parent();
@@ -49,7 +46,6 @@
     const oldNameId = parent.children('div.collapse').attr('name');
     const newNameId = parent.parent().children().length;
     const replaceRule = [new RegExp(`${oldNameId}$`), newNameId];
-
     const copyElement = $(parent.prop('outerHTML'));
     copyElement.children().map((index, element) => {
       const id = $(element).attr('id');
@@ -60,7 +56,7 @@
       if (name) {
         $(element).attr('name', newNameId);
       }
-    })
+    });
     copyElement.children('p').children('a').map((index, element) => {
       const href = $(element).attr('href');
       if (href) {
@@ -70,7 +66,7 @@
       if (ariaControls) {
         $(element).attr('aria-controls', ariaControls.replace(...replaceRule));
       }
-    })
+    });
     copyElement.children('p').children('button').map((index, element) => {
       const dataId = $(element).attr('data-id');
       if (dataId) {
@@ -80,7 +76,7 @@
       if (dataName) {
         $(element).attr('data-name', newNameId);
       }
-    })
+    });
     copyElement.children('div.collapse').children().map((index, element) => {
       const name = $(element).children('[name]').attr('name');
       const childrenReplaceRule = [new RegExp(`${oldNameId}-${name}$`), `${newNameId}-${name}`];
@@ -101,14 +97,11 @@
         if (ariaDescribedby) {
           $(childrenElement).attr('aria-describedby', id.replace(...childrenReplaceRule));
         }
-      })
-    })
-
+      });
+    });
     parent.after(copyElement.prop('outerHTML'));
-
     $('button.repeat').off('click', repeatButton).on('click', repeatButton);
   }
-
   const generatorButton = $(`<button class="btn btn-primary" type="submit" style="margin-bottom: 1rem;">Generator</button>`);
   //generatorButton.click(function() {
   //  $(this).attr('disabled', 'disabled').html(`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>Loading...`);
@@ -120,10 +113,8 @@
       $(this).children('button[type="submit"]').text('Generator').removeAttr('disabled');
       event.stopPropagation();
     }
-
     event.preventDefault();
     const form = $(this);
-
     for (const element of $.makeArray(form.find('[data-validation]'))) {
       $(element).removeClass('is-invalid').removeClass('is-valid');
       if (!new RegExp($(element).attr('data-validation')).test($(element).val())) {
@@ -132,14 +123,14 @@
     }
     if (form.find('.is-invalid[data-validation]').length > 0) {
       $(this).children('button[type="submit"]').text('Generator').removeAttr('disabled');
-      form.find('.is-invalid[data-validation]')[0].scrollIntoView({ behavior: "smooth" });
+      form.find('.is-invalid[data-validation]')[0].scrollIntoView({
+        behavior: "smooth"
+      });
       return;
     }
-
     const config = generateData(form);
     let result = '';
     console.log(config);
-
     if (form.attr('data-type') === 'json') {
       result = JSON.stringify(config, null, 2);
     }
@@ -158,7 +149,6 @@
     }
     $(this).children('button[type="submit"]').text('Generator').removeAttr('disabled');
   });
-
   function generateData(parent, isArray) {
     const config = isArray ? [] : {};
     parent.find(`[data-parent="${parent.attr('id').replace('config-', '')}"]`).map((index, element) => {
@@ -210,7 +200,7 @@
     if (options.type === 'text') {
       if (options.inputType === 'textarea') {
         $(`#config-${preId}`).append(`<div class="mb-3">
-    <label for="${id}" class="form-label">${options.name || name}${(parentType === 'array' && options.repeat === true) ? `<button type="button" class="btn btn-outline-primary repeat" data-id="${id}" data-name="${name}" style="--bs-btn-padding-y: 0rem; --bs-btn-padding-x: .3rem;--bs-btn-font-size: .55rem;border-radius: 50%;margin-left: .5rem;">+</button>` : ''}</label>
+    <label for="${id}" class="form-label">${options.name || name}${parentType === 'array' && options.repeat === true ? `<button type="button" class="btn btn-outline-primary repeat" data-id="${id}" data-name="${name}" style="--bs-btn-padding-y: 0rem; --bs-btn-padding-x: .3rem;--bs-btn-font-size: .55rem;border-radius: 50%;margin-left: .5rem;">+</button>` : ''}</label>
     <textarea type="text" class="form-control item" id="${id}" name="${name}" data-parent="${preId}"
     ${options.desp ? ` aria-describedby="help-${id}"` : ''}
     ${options.placeholder ? ` placeholder="${options.placeholder}"` : ''}
@@ -223,9 +213,8 @@
   </div>`);
         return;
       }
-
       $(`#config-${preId}`).append(`<div class="mb-3">
-    <label for="${id}" class="form-label">${options.name || name}${(parentType === 'array' && options.repeat === true) ? `<button type="button" class="btn btn-outline-primary repeat" data-id="${id}" data-name="${name}" style="--bs-btn-padding-y: 0rem; --bs-btn-padding-x: .3rem;--bs-btn-font-size: .55rem;border-radius: 50%;margin-left: .5rem;">+</button>` : ''}</label>
+    <label for="${id}" class="form-label">${options.name || name}${parentType === 'array' && options.repeat === true ? `<button type="button" class="btn btn-outline-primary repeat" data-id="${id}" data-name="${name}" style="--bs-btn-padding-y: 0rem; --bs-btn-padding-x: .3rem;--bs-btn-font-size: .55rem;border-radius: 50%;margin-left: .5rem;">+</button>` : ''}</label>
     <input type="${options.inputType || 'text'}" class="form-control" id="${id}" name="${name}" data-parent="${preId}"
     ${options.desp ? ` aria-describedby="help-${id}"` : ''}
     ${options.placeholder ? ` placeholder="${options.placeholder}"` : ''}
@@ -246,7 +235,7 @@
     ${options.desp ? ` aria-describedby="help-${id}"` : ''}
     ${options.defaultValue ? ` checked="checked"` : ''}
     />
-  <label class="form-check-label" for="${id}">${options.name || name}${(parentType === 'array' && options.repeat === true) ? `<button type="button" class="btn btn-outline-primary repeat" data-id="${id}" data-name="${name}" style="--bs-btn-padding-y: 0rem; --bs-btn-padding-x: .3rem;--bs-btn-font-size: .55rem;border-radius: 50%;margin-left: .5rem;">+</button>` : ''}</label>
+  <label class="form-check-label" for="${id}">${options.name || name}${parentType === 'array' && options.repeat === true ? `<button type="button" class="btn btn-outline-primary repeat" data-id="${id}" data-name="${name}" style="--bs-btn-padding-y: 0rem; --bs-btn-padding-x: .3rem;--bs-btn-font-size: .55rem;border-radius: 50%;margin-left: .5rem;">+</button>` : ''}</label>
     ${options.desp ? `<div id="help-${id}" class="form-text">${options.desp}</div>` : ''}
 </div>`);
       return;
@@ -255,10 +244,10 @@
     // single-select
     if (options.type === 'single-select') {
       $(`#config-${preId}`).append(`<div class="mb-3">
-      <label class="form-select-label" for="${id}">${options.name || name}${(parentType === 'array' && options.repeat === true) ? `<button type="button" class="btn btn-outline-primary repeat" data-id="${id}" data-name="${name}" style="--bs-btn-padding-y: 0rem; --bs-btn-padding-x: .3rem;--bs-btn-font-size: .55rem;border-radius: 50%;margin-left: .5rem;">+</button>` : ''}</label>
+      <label class="form-select-label" for="${id}">${options.name || name}${parentType === 'array' && options.repeat === true ? `<button type="button" class="btn btn-outline-primary repeat" data-id="${id}" data-name="${name}" style="--bs-btn-padding-y: 0rem; --bs-btn-padding-x: .3rem;--bs-btn-font-size: .55rem;border-radius: 50%;margin-left: .5rem;">+</button>` : ''}</label>
       <select class="form-select" id="${id}" name="${name}" data-parent="${preId}"
     ${options.desp ? ` aria-describedby="help-${id}"` : ''}>
-      ${options.options.map((option) => `<option value="${option}" ${option === options.defaultValue ? ' selected' : ''}>${option}</option>`).join('')}
+      ${options.options.map(option => `<option value="${option}" ${option === options.defaultValue ? ' selected' : ''}>${option}</option>`).join('')}
 </select>
     ${options.desp ? `<div id="help-${id}" class="form-text">${options.desp}</div>` : ''}
 </div>`);
@@ -268,10 +257,10 @@
     // multi-select
     if (options.type === 'multi-select') {
       $(`#config-${preId}`).append(`<div class="mb-3">
-      <label class="form-select-label" for="${id}">${options.name || name}${(parentType === 'array' && options.repeat === true) ? `<button type="button" class="btn btn-outline-primary repeat" data-id="${id}" data-name="${name}" style="--bs-btn-padding-y: 0rem; --bs-btn-padding-x: .3rem;--bs-btn-font-size: .55rem;border-radius: 50%;margin-left: .5rem;">+</button>` : ''}</label>
+      <label class="form-select-label" for="${id}">${options.name || name}${parentType === 'array' && options.repeat === true ? `<button type="button" class="btn btn-outline-primary repeat" data-id="${id}" data-name="${name}" style="--bs-btn-padding-y: 0rem; --bs-btn-padding-x: .3rem;--bs-btn-font-size: .55rem;border-radius: 50%;margin-left: .5rem;">+</button>` : ''}</label>
       <select class="form-select" id="${id}" name="${name}" multiple data-parent="${preId}"
     ${options.desp ? ` aria-describedby="help-${id}"` : ''}>
-      ${options.options.map((option) => `<option value="${option}" ${(options.defaultValue || []).includes(option) ? ' selected' : ''}>${option}</option>`).join('')}
+      ${options.options.map(option => `<option value="${option}" ${(options.defaultValue || []).includes(option) ? ' selected' : ''}>${option}</option>`).join('')}
 </select>
     ${options.desp ? `<div id="help-${id}" class="form-text">${options.desp}</div>` : ''}
 </div>`);
@@ -285,7 +274,7 @@
   data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="custom-tooltip" data-bs-title="Click to hide/show the options about ${options.name || name}.">
     ${options.name || name}
   </a>
-  ${(parentType === 'array' && options.repeat === true) ? `<button type="button" class="btn btn-outline-primary repeat" data-id="config-${preId}-${name}" data-name="${name}" style="--bs-btn-padding-y: 0rem; --bs-btn-padding-x: .3rem;--bs-btn-font-size: .55rem;border-radius: 50%;margin-left: .5rem;">+</button>` : ''}
+  ${parentType === 'array' && options.repeat === true ? `<button type="button" class="btn btn-outline-primary repeat" data-id="config-${preId}-${name}" data-name="${name}" style="--bs-btn-padding-y: 0rem; --bs-btn-padding-x: .3rem;--bs-btn-font-size: .55rem;border-radius: 50%;margin-left: .5rem;">+</button>` : ''}
     ${options.desp ? `<div id="configHelp-${preId}-${name}" class="form-text">${options.desp}</div>` : ''}
 </p><div id="config-${preId}-${name}" class="collapse show" name="${name}" type="object" data-parent="${preId}"></div></div>`);
       Object.entries(options.body).forEach(([subName, subOptions]) => {
@@ -300,17 +289,15 @@
   data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="custom-tooltip" data-bs-title="Click to hide/show the options about ${options.name || name}.">
     ${options.name || name}
   </a>
-  ${(parentType === 'array' && options.repeat === true) ? `<button type="button" class="btn btn-outline-primary repeat" data-id="config-${preId}-${name}" data-name="${name}" style="--bs-btn-padding-y: 0rem; --bs-btn-padding-x: .3rem;--bs-btn-font-size: .55rem;border-radius: 50%;margin-left: .5rem;">+</button>` : ''}
+  ${parentType === 'array' && options.repeat === true ? `<button type="button" class="btn btn-outline-primary repeat" data-id="config-${preId}-${name}" data-name="${name}" style="--bs-btn-padding-y: 0rem; --bs-btn-padding-x: .3rem;--bs-btn-font-size: .55rem;border-radius: 50%;margin-left: .5rem;">+</button>` : ''}
     ${options.desp ? `<div id="configHelp-${preId}-${name}" class="form-text">${options.desp}</div>` : ''}
 </p><div id="config-${preId}-${name}" class="collapse show" name="${name}" type="array" data-parent="${preId}"></div></div>`);
-
       const arrayBody = [];
       options.body.forEach((subOptions, subName) => {
         if (typeof subOptions.repeat === 'number' && subOptions.repeat > 0) {
-          arrayBody.push(...(new Array(subOptions.repeat).fill(subOptions)));
+          arrayBody.push(...new Array(subOptions.repeat).fill(subOptions));
           return;
         }
-
         arrayBody.push(subOptions);
       });
       arrayBody.forEach((subOptions, subName) => {
@@ -319,7 +306,9 @@
     }
   }
   function download(data, filename, type) {
-    const file = new Blob([data], { type });
+    const file = new Blob([data], {
+      type
+    });
     if (window.navigator.msSaveOrOpenBlob) {
       window.navigator.msSaveOrOpenBlob(file, filename);
     } else {
@@ -339,12 +328,10 @@
     try {
       const templateJson = jsyaml.load(template);
       console.log(templateJson);
-
       if (!Array.isArray(templateJson)) {
         showError('The root template must be an array!');
         return false;
       }
-
       for (let i = 0; i < templateJson.length; i++) {
         // root template check
         if (!templateJson[i].name) {
@@ -363,17 +350,15 @@
       return templateJson;
     } catch (error) {
       console.error(error);
-      showError(error.message)
+      showError(error.message);
       return false;
     }
   }
-
   function showError(message, title = '') {
     $('#modalLabel').html(`<span class="badge rounded-pill text-bg-danger">Error</span>${title || ''}`);
     $('#modalBody>textarea').val(message);
     const myModalAlternative = new bootstrap.Modal('#modal').show();
   }
-
   function object2ini(data, parentKey = '') {
     return Object.entries(data).map(([key, value]) => {
       if (typeof value === 'object') {
