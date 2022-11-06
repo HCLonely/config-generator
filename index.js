@@ -1,7 +1,7 @@
 (async () => {
   const fileLink = Object.fromEntries(window.location.search.replace(/^\?/, '').split('&').map((e) => e.split('='))).fileLink;
   if (!fileLink) {
-    // todo: home page
+    // todo: home page+文件
     return;
   }
   const [status, template] = await axios.get(fileLink).then((response) => [true, response.data]).catch((error) => {
