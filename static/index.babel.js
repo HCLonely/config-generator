@@ -481,12 +481,35 @@
           return false;
         }
       }
-      return templateJson;
+      console.log(templateJsonSafety(templateJson));
+      return templateJsonSafety(templateJson);
     } catch (error) {
       console.error(error);
       showError(error.message);
       return false;
     }
+  }
+  function templateJsonSafety(templateJson) {
+    if (Array.isArray(templateJson)) {
+      return templateJson.map(value => {
+        if (typeof value === 'string') {
+          return htmlEncode(value);
+        }
+        if (value && typeof value === 'object') {
+          return templateJsonSafety(value);
+        }
+        return value;
+      });
+    }
+    return Object.fromEntries(Object.entries(templateJson).map(([name, value]) => {
+      if (typeof value === 'string') {
+        return [htmlEncode(name), htmlEncode(value)];
+      }
+      if (value && typeof value === 'object') {
+        return [htmlEncode(name), templateJsonSafety(value)];
+      }
+      return [htmlEncode(name), value];
+    }));
   }
   function showError(message, title = '') {
     $('#modalLabel').html(`<span class="badge rounded-pill text-bg-danger">Error</span>${title || ''}`);
@@ -513,5 +536,11 @@
       });
       reader.readAsText(file);
     });
+  }
+  function htmlEncode(str) {
+    if (str.length === 0) {
+      return '';
+    }
+    return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/ /g, '&nbsp;').replace(/'/g, '&apos;').replace(/"/g, '&quot;');
   }
 })();
