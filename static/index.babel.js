@@ -3,8 +3,16 @@
     fileLink
   } = Object.fromEntries(window.location.search.replace(/^\?/, '').split('&').map(e => e.split('=')));
   if (fileLink) {
+    const fileUrl = new URL(decodeURIComponent(fileLink));
+    if (fileUrl.search) {
+      fileUrl.search += `&time=${Date.now()}`;
+    } else {
+      fileUrl.search += `?time=${Date.now()}`;
+    }
     loadRemoteTemplate(decodeURIComponent(fileLink));
+    // load
   }
+
   const [dropArea] = $('#file-selector');
   dropArea.addEventListener('dragover', event => {
     event.stopPropagation();
@@ -54,7 +62,15 @@
     $(event.target).text('Generator').removeAttr('disabled');
   });
   async function loadRemoteTemplate(fileLink) {
-    const [status, template] = await axios.get(fileLink).then(response => [true, response.data]).catch(error => {
+    /*
+    $.getScript(fileLink, (data, status, jqxhr) => {
+      console.log(data);
+    });
+    */
+
+    const [status, template] = await axios.get(fileLink, {
+      validateStatus: status => status >= 200 && status < 400
+    }).then(response => [true, response.data]).catch(error => {
       console.error(error);
       return [false, error];
     });
@@ -78,7 +94,7 @@
         $('#single-config-name>button').text(singleConfig.name);
         $(`#config-${singleConfig.name}`).show();
       }
-      const singleConfigList = $(`<li><a class="dropdown-item${index === 0 ? ' active' : ''}" href="#">${singleConfig.name}</a></li>`);
+      const singleConfigList = $(`<li><a class="dropdown-item${index === 0 ? ' active' : ''}" href="javascript:void(0);">${singleConfig.name}</a></li>`);
       singleConfigList.click(function () {
         const name = $(this).text().trim();
         $('#single-config-name>button').attr('data-name', name);
