@@ -12,6 +12,9 @@
       return false;
     });
     new bootstrap.Tooltip($('#back2top')[0]);
+    if (new Date().getFullYear() > 2022) {
+      $('#copyright').val(`Copyright © 2022 - ${new Date().getFullYear()} By HCLonely`);
+    }
   });
   const {
     fileLink
