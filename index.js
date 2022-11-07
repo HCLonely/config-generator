@@ -1,4 +1,18 @@
 (async () => {
+  $(document).ready(() => {
+    $(window).scroll(function () {
+      if ($(this).scrollTop() > 50) {
+        $('#back2top').fadeIn();
+      } else {
+        $('#back2top').fadeOut();
+      }
+    });
+    $('#back2top').click(() => {
+      document.body.scrollIntoView();
+      return false;
+    });
+    new bootstrap.Tooltip($('#back2top')[0]);
+  });
   const { fileLink } = Object.fromEntries(window.location.search.replace(/^\?/, '').split('&').map((e) => e.split('=')));
 
   if (fileLink) {
@@ -9,7 +23,6 @@
       fileUrl.search += `?time=${Date.now()}`;
     }
     loadRemoteTemplate(decodeURIComponent(fileLink));
-    // load
   }
   const [dropArea] = $('#file-selector');
 
@@ -67,11 +80,8 @@
   });
 
   async function loadRemoteTemplate(fileLink) {
-    /*
-    $.getScript(fileLink, (data, status, jqxhr) => {
-      console.log(data);
-    });
-    */
+    const loadingModal = new bootstrap.Modal('#modal-loading');
+    loadingModal.show();
 
     const [status, template] = await axios.get(fileLink, {
       validateStatus: (status) => status >= 200 && status < 400
@@ -79,6 +89,11 @@
       console.error(error);
       return [false, error];
     });
+    const [loadingModalEl] = $('#modal-loading');
+    loadingModalEl.addEventListener('shown.bs.modal', () => {
+      loadingModal.hide();
+    });
+    loadingModal.hide();
     if (!status) {
       showError(template.message, 'Get template file failed!');
       return;
@@ -97,7 +112,14 @@
       // 多配置文件处理
       $('div.container').append(`<form id="config-${singleConfig.name}" style="display:none;" data-type="${
         singleConfig.type || singleConfig.filename.split('.').slice(0, -1).join('.')
-      }" data-filename="${singleConfig.filename || `${singleConfig.name}.${singleConfig.type}`}"></form>`);
+      }" data-filename="${singleConfig.filename || `${singleConfig.name}.${singleConfig.type}`}">
+        ${singleConfig.quote ? `<figure class="text-center" style="border: 1px dashed #00c9ff;border-radius: 5px;">
+          <blockquote class="blockquote">
+            <p>${singleConfig.quote}</p>
+          </blockquote>
+          ${singleConfig.author ? `<figcaption class="blockquote-footer" style="margin-bottom: .5rem;">${singleConfig.author}</figcaption>` : ''}
+        </figure>` : ''}
+      </form>`);
       if (index === 0) {
         $('#single-config-name>button').attr('data-name', singleConfig.name);
         $('#single-config-name>button').text(singleConfig.name);
@@ -239,8 +261,23 @@
       });
       return element;
     });
+    copyElement.children().children('button.repeat').map((index, element) => {
+      const deleteRepeatButton = $(element).clone();
+      deleteRepeatButton.removeClass('repeat').addClass('delete-repeat').text('-')
+        .attr('style', '--bs-btn-padding-y: .02rem; --bs-btn-padding-x: .39rem;--bs-btn-font-size: .55rem;border-radius: 50%;margin-left: .5rem;');
+
+      if ($(element).prev().hasClass('delete-repeat')) {
+        $(element).prev().remove();
+      }
+      $(element).before(deleteRepeatButton);
+      return element;
+    });
 
     parent.after(copyElement.prop('outerHTML'));
+    $('button.delete-repeat').off('click').on('click', (event) => {
+      $(event.target).parent().parent()
+        .remove();
+    });
 
     $('button.repeat').off('click', repeatButton).on('click', repeatButton);
   }

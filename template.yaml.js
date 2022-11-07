@@ -1,6 +1,8 @@
 - name: pusher
   type: ini
   filename: copy
+  quote: Test
+  author: HCLonely
   body:
     token:
       name: Token
