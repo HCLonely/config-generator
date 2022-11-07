@@ -3,7 +3,7 @@
     fileLink
   } = Object.fromEntries(window.location.search.replace(/^\?/, '').split('&').map(e => e.split('=')));
   if (fileLink) {
-    loadRemoteTemplate(fileLink);
+    loadRemoteTemplate(decodeURIComponent(fileLink));
   }
   const [dropArea] = $('#file-selector');
   dropArea.addEventListener('dragover', event => {
