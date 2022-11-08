@@ -113,7 +113,7 @@
 
     templateJson.forEach((singleConfig, index) => {
       // 多配置文件处理
-      $('div.container').append(`<form id="config-${singleConfig.name}" style="display:none;" data-type="${
+      $('div.container').append(`<form id="config-${htmlDecode(singleConfig.name).replace(/[^\w\d-_]/ig, '')}" style="display:none;" data-type="${
         singleConfig.type || singleConfig.filename.split('.').slice(0, -1).join('.')
       }" data-filename="${singleConfig.filename || `${singleConfig.name}.${singleConfig.type}`}">
         ${singleConfig.quote ? `<figure class="text-center" style="border: 1px dashed #00c9ff;border-radius: 5px;">
@@ -124,9 +124,9 @@
         </figure>` : ''}
       </form>`);
       if (index === 0) {
-        $('#single-config-name>button').attr('data-name', singleConfig.name);
-        $('#single-config-name>button').text(singleConfig.name);
-        $(`#config-${singleConfig.name}`).show();
+        $('#single-config-name>button').attr('data-name', htmlDecode(singleConfig.name));
+        $('#single-config-name>button').text(htmlDecode(singleConfig.name));
+        $(`#config-${htmlDecode(singleConfig.name).replace(/[^\w\d-_]/ig, '')}`).show();
       }
       const singleConfigList = $(`<li><a class="dropdown-item${index === 0 ? ' active' : ''}" href="javascript:void(0);">${singleConfig.name}</a></li>`);
       singleConfigList.click(function () {
@@ -143,7 +143,7 @@
 
       // 配置项处理
       Object.entries(singleConfig.body).forEach(([name, options]) => {
-        generateBody(singleConfig.name, name, options);
+        generateBody(htmlDecode(singleConfig.name).replace(/[^\w\d-_]/ig, ''), name, options);
       });
     });
 
@@ -583,8 +583,17 @@
     return str.replace(/&/g, '&amp;')
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;')
-      .replace(/ /g, '&nbsp;')
       .replace(/'/g, '&apos;')
       .replace(/"/g, '&quot;');
+  }
+  function htmlDecode(str) {
+    if (str.length === 0) {
+      return '';
+    }
+    return str.replace(/&amp;/g, '&')
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>')
+      .replace(/&apos;/g, '\'')
+      .replace(/&quot;/g, '"');
   }
 })();
