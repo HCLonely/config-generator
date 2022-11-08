@@ -125,7 +125,7 @@
         $(this).children('a').addClass('active');
         // show
         $('form').hide();
-        $(`#config-${name}`).show();
+        $(`#config-${name.replace(/[,./;'[\]\\<>?:"{}|`~!@#$%^&*()+=\s]/gi, '')}`).show();
       });
       $('#single-config-name>ul').append(singleConfigList);
 
