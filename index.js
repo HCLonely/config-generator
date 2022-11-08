@@ -26,7 +26,6 @@
   dropArea.addEventListener('dragover', (event) => {
     event.stopPropagation();
     event.preventDefault();
-    // 将拖放作为"复制文件"的操作。
     event.dataTransfer.dropEffect = 'copy';
   });
 
