@@ -26,7 +26,6 @@
   dropArea.addEventListener('dragover', event => {
     event.stopPropagation();
     event.preventDefault();
-    // 将拖放作为"复制文件"的操作。
     event.dataTransfer.dropEffect = 'copy';
   });
   dropArea.addEventListener('drop', async event => {
@@ -104,7 +103,7 @@
     $('#file-selector,#loadRemoteFileLabel,#loadRemoteFileInput').hide();
     templateJson.forEach((singleConfig, index) => {
       // 多配置文件处理
-      $('div.container').append(`<form id="config-${htmlDecode(singleConfig.name).replace(/[^\w\d-_]/ig, '')}" style="display:none;" data-type="${singleConfig.type || singleConfig.filename.split('.').slice(0, -1).join('.')}" data-filename="${singleConfig.filename || `${singleConfig.name}.${singleConfig.type}`}">
+      $('div.container').append(`<form id="config-${htmlDecode(singleConfig.name).replace(/[,./;'[\]\\<>?:"{}|`~!@#$%^&*()+=\s]/ig, '')}" style="display:none;" data-type="${singleConfig.type || singleConfig.filename.split('.').slice(0, -1).join('.')}" data-filename="${singleConfig.filename || `${singleConfig.name}.${singleConfig.type}`}">
         ${singleConfig.quote ? `<figure class="text-center" style="border: 1px dashed #00c9ff;border-radius: 5px;">
           <blockquote class="blockquote">
             <p>${singleConfig.quote}</p>
@@ -115,7 +114,7 @@
       if (index === 0) {
         $('#single-config-name>button').attr('data-name', htmlDecode(singleConfig.name));
         $('#single-config-name>button').text(htmlDecode(singleConfig.name));
-        $(`#config-${htmlDecode(singleConfig.name).replace(/[^\w\d-_]/ig, '')}`).show();
+        $(`#config-${htmlDecode(singleConfig.name).replace(/[,./;'[\]\\<>?:"{}|`~!@#$%^&*()+=\s]/gi, '')}`).show();
       }
       const singleConfigList = $(`<li><a class="dropdown-item${index === 0 ? ' active' : ''}" href="javascript:void(0);">${singleConfig.name}</a></li>`);
       singleConfigList.click(function () {
@@ -132,7 +131,7 @@
 
       // 配置项处理
       Object.entries(singleConfig.body).forEach(([name, options]) => {
-        generateBody(htmlDecode(singleConfig.name).replace(/[^\w\d-_]/ig, ''), name, options);
+        generateBody(htmlDecode(singleConfig.name).replace(/[,./;'[\]\\<>?:"{}|`~!@#$%^&*()+=\s]/ig, ''), name, options);
       });
     });
     $('button.repeat').on('click', repeatButton);
