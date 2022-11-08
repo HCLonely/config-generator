@@ -20,12 +20,6 @@
     fileLink
   } = Object.fromEntries(window.location.search.replace(/^\?/, '').split('&').map(e => e.split('=')));
   if (fileLink) {
-    const fileUrl = new URL(decodeURIComponent(fileLink));
-    if (fileUrl.search) {
-      fileUrl.search += `&time=${Date.now()}`;
-    } else {
-      fileUrl.search += `?time=${Date.now()}`;
-    }
     loadRemoteTemplate(decodeURIComponent(fileLink));
   }
   const [dropArea] = $('#file-selector');
@@ -77,9 +71,15 @@
     $(event.target).text('Generator').removeAttr('disabled');
   });
   async function loadRemoteTemplate(fileLink) {
+    const fileUrl = new URL(fileLink);
+    if (fileUrl.search) {
+      fileUrl.search += `&time=${Date.now()}`;
+    } else {
+      fileUrl.search += `?time=${Date.now()}`;
+    }
     const loadingModal = new bootstrap.Modal('#modal-loading');
     loadingModal.show();
-    const [status, template] = await axios.get(fileLink, {
+    const [status, template] = await axios.get(fileUrl.href, {
       validateStatus: status => status >= 200 && status < 400
     }).then(response => [true, response.data]).catch(error => {
       console.error(error);
