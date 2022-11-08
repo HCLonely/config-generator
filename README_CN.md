@@ -43,4 +43,4 @@
 
 ### 示例
 
-请查看[示例文件](/template.yaml.js?raw=true)及相应的[渲染结果](https://configer.hclonely.com/?fileLink=https%3A%2F%2Fraw.githubusercontent.com%2FHCLonely%2Fconfig-generator%2Fmain%2Ftemplate.yaml.js)。
+请查看[示例文件](/template.yaml.js)及相应的[渲染结果](https://configer.hclonely.com/?fileLink=https%3A%2F%2Fraw.githubusercontent.com%2FHCLonely%2Fconfig-generator%2Fmain%2Ftemplate.yaml.js)。

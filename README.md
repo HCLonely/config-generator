@@ -43,4 +43,4 @@
 
 ### 示例
 
-Please check the [sample file](/template.yaml.js?raw=true) and the corresponding [rendering result](https://configer.hclonely.com/?fileLink=https%3A%2F%2Fraw.githubusercontent.com%2FHCLonely%2Fconfig-generator%2Fmain%2Ftemplate.yaml.js).
+Please check the [sample file](/template.yaml.js) and the corresponding [rendering result](https://configer.hclonely.com/?fileLink=https%3A%2F%2Fraw.githubusercontent.com%2FHCLonely%2Fconfig-generator%2Fmain%2Ftemplate.yaml.js).
