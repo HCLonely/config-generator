@@ -4,6 +4,8 @@
 >
 > <https://configer.hclonely.com/>
 
+[Document](/README.md) | [简体中文](/README_CN.md)
+
 ## Config template
 
 **The config template only supports `yaml` format!**

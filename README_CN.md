@@ -4,6 +4,8 @@
 >
 > <https://configer.hclonely.com/>
 
+[Document](/README.md) | [简体中文](/README_CN.md)
+
 ## 配置文件模板说明
 
 **配置文件模板仅支持`yaml`格式！**
