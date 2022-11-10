@@ -337,7 +337,9 @@
       if (options.inputType === 'textarea') {
         $(`#config-${preId}`).append(`<div class="mb-3">
           <label for="${id}" class="form-label">
-            ${options.name || name}${(parentType === 'array' && options.repeat === true) ? `<button type="button" class="btn btn-outline-primary repeat"
+            ${options.name || name}${options.required ? '<font style="color:red;" title="Required">*</font>' : ''}
+            ${options.validation ? '<font style="color:blue;" title="RegExp Validation">!</font>' : ''}
+            ${(parentType === 'array' && options.repeat === true) ? `<button type="button" class="btn btn-outline-primary repeat"
             data-id="${id}" data-name="${name}"
             style="--bs-btn-padding-y: 0rem; --bs-btn-padding-x: .3rem;--bs-btn-font-size: .55rem;border-radius: 50%;margin-left: .5rem;">+</button>` : ''}
           </label>
@@ -355,7 +357,9 @@
       }
 
       $(`#config-${preId}`).append(`<div class="mb-3">
-        <label for="${id}" class="form-label">${options.name || name}${(parentType === 'array' && options.repeat === true) ? `<button type="button"
+        <label for="${id}" class="form-label">${options.name || name}${options.required ? '<font style="color:red;" title="Required">*</font>' : ''}
+            ${options.validation ? '<font style="color:blue;" title="RegExp Validation">!</font>' : ''}
+            ${(parentType === 'array' && options.repeat === true) ? `<button type="button"
           class="btn btn-outline-primary repeat" data-id="${id}" data-name="${name}"
           style="--bs-btn-padding-y: 0rem; --bs-btn-padding-x: .3rem;--bs-btn-font-size: .55rem;border-radius: 50%;margin-left: .5rem;">+</button>` : ''}
         </label>
