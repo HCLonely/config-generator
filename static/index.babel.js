@@ -373,7 +373,8 @@
         </label>
         <select class="form-select" id="${id}" name="${name}" data-parent="${preId}"
         ${options.desp ? ` aria-describedby="help-${id}"` : ''}>
-          ${options.options.map(option => `<option value="${option}" ${option === options.defaultValue ? ' selected' : ''}>${option}</option>`).join('')}
+          ${options.options.map((option, index) => `<option value="${option}" ${option === options.defaultValue ? ' selected' : ''}>
+          ${options.optionsName?.[index] ? options.optionsName[index] : option}</option>`).join('')}
         </select>
         ${options.desp ? `<div id="help-${id}" class="form-text">${options.desp}</div>` : ''}
       </div>`);
@@ -389,8 +390,9 @@
         </label>
         <select class="form-select" id="${id}" name="${name}" multiple data-parent="${preId}"
         ${options.desp ? ` aria-describedby="help-${id}"` : ''}>
-          ${options.options.map(option => `<option value="${option}"
-          ${(options.defaultValue || []).includes(option) ? ' selected' : ''}>${option}</option>`).join('')}
+          ${options.options.map((option, index) => `<option value="${option}"
+          ${(options.defaultValue || []).includes(option) ? ' selected' : ''}>
+          ${options.optionsName?.[index] ? options.optionsName[index] : option}</option>`).join('')}
         </select>
         ${options.desp ? `<div id="help-${id}" class="form-text">${options.desp}</div>` : ''}
       </div>`);

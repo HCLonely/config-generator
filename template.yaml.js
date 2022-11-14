@@ -125,6 +125,11 @@
       defaultValue:
         - a
         - 2
+      optionsName:
+        - A
+        - B
+        - C
+        - D
       options:
         - a
         - 2

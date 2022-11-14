@@ -40,6 +40,7 @@
 | body | array/object | N | Is it required when `type='array'`/`type='object'`. The format is the same as the `body` of root options. |
 | repeat | boolean/number | N | This option takes effect when the previous level of `type='array'`. `repeat=true`: Allow users to add this option themselves. `repeat={number}`: Repeat generating this option `number` times. |
 | options | array | N | Is it required when `type='single-select'`/`type='multi-select'`. Option content. |
+| optionsName | array | 否 | Display name corresponding to options. |
 
 ### 示例
 
