@@ -347,7 +347,7 @@
             ${options.desp ? ` aria-describedby="help-${id}"` : ''}
             ${options.placeholder ? ` placeholder="${options.placeholder}"` : ''}
             ${options.required ? ' required' : ''}
-            ${`${options.validation}` ? ` value="${options.defaultValue}"` : ''}
+            ${`${options.defaultValue ?? ''}` ? ` value="${options.defaultValue}"` : ''}
             ${options.validation ? ` data-validation="${options.validation}"` : ''}
           ></textarea>
           ${options.validation ? '<div class="invalid-feedback">Invalid format!</div>' : ''}
@@ -367,7 +367,7 @@
           ${options.desp ? ` aria-describedby="help-${id}"` : ''}
           ${options.placeholder ? ` placeholder="${options.placeholder}"` : ''}
           ${options.required ? ' required' : ''}
-          ${`${options.validation}` ? ` value="${options.defaultValue}"` : ''}
+          ${`${options.defaultValue ?? ''}` ? ` value="${options.defaultValue}"` : ''}
           ${options.validation ? ` data-validation="${options.validation}"` : ''}
         />
         ${options.validation ? '<div class="invalid-feedback">Invalid format!</div>' : ''}
