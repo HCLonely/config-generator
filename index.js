@@ -338,7 +338,7 @@
         $(`#config-${preId}`).append(`<div class="mb-3" ${parentType === 'single-select' ? ` style="display: none;" bind-value="${bindValue}"` : ''}>
           <label for="${id}" class="form-label">
             ${options.name || name}${options.required ? '<font style="color:red;" title="Required">*</font>' : ''}
-            ${options.validation ? '<font style="color:blue;" title="RegExp Validation">!</font>' : ''}
+            ${`${options.validation}` ? '<font style="color:blue;" title="RegExp Validation">!</font>' : ''}
             ${(parentType === 'array' && options.repeat === true) ? `<button type="button" class="btn btn-outline-primary repeat"
             data-id="${id}" data-name="${name}"
             style="--bs-btn-padding-y: 0rem; --bs-btn-padding-x: .3rem;--bs-btn-font-size: .55rem;border-radius: 50%;margin-left: .5rem;">+</button>` : ''}
@@ -347,7 +347,7 @@
             ${options.desp ? ` aria-describedby="help-${id}"` : ''}
             ${options.placeholder ? ` placeholder="${options.placeholder}"` : ''}
             ${options.required ? ' required' : ''}
-            ${options.defaultValue ? ` value="${options.defaultValue}"` : ''}
+            ${`${options.validation}` ? ` value="${options.defaultValue}"` : ''}
             ${options.validation ? ` data-validation="${options.validation}"` : ''}
           ></textarea>
           ${options.validation ? '<div class="invalid-feedback">Invalid format!</div>' : ''}
@@ -367,7 +367,7 @@
           ${options.desp ? ` aria-describedby="help-${id}"` : ''}
           ${options.placeholder ? ` placeholder="${options.placeholder}"` : ''}
           ${options.required ? ' required' : ''}
-          ${options.defaultValue ? ` value="${options.defaultValue}"` : ''}
+          ${`${options.validation}` ? ` value="${options.defaultValue}"` : ''}
           ${options.validation ? ` data-validation="${options.validation}"` : ''}
         />
         ${options.validation ? '<div class="invalid-feedback">Invalid format!</div>' : ''}
