@@ -381,7 +381,6 @@
       if (options.bindValue) {
         $(`#${id}`).data('bindData', options.bindValue.body);
         $(`#${id}`).change(function () {
-          console.log($(`#config-${preId} [bind-value="${name}"]`));
           $(`#config-${preId} [bind-value="${name}"]`).remove();
           const data = $(this).data('bindData')[$(this).val()];
           if (data) {
@@ -389,10 +388,14 @@
               generateBody(`${preId}`, subName, subOptions, options.type, name);
             });
           }
-          // $(`#${id} bind-value="${$(this).val()}"`).show();
         });
+        const data = options.bindValue.body[options.defaultValue];
+        if (data) {
+          Object.entries(data).forEach(([subName, subOptions]) => {
+            generateBody(`${preId}`, subName, subOptions, options.type, name);
+          });
+        }
       }
-
       return;
     }
 

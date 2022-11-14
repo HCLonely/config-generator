@@ -417,6 +417,12 @@
             });
           }
         });
+        const data = options.bindValue.body[options.defaultValue];
+        if (data) {
+          Object.entries(data).forEach(([subName, subOptions]) => {
+            generateBody(`${preId}`, subName, subOptions, options.type, name);
+          });
+        }
       }
       return;
     }
