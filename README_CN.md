@@ -41,6 +41,7 @@
 | repeat | boolean/number | 否 | 此配置的上一级`type='array'`时生效，`repeat=true`：允许用户自行添加此选项，`repeat={number}`：重复生成此选项`number`次 |
 | options | array | 否 | `type='single-select'`/`type='multi-select'`时必需，选项内容 |
 | optionsName | array | 否 | options对应显示名称 |
+| bindValue | object | 否 | `type='single-select'`时可选，有`type`和`body`属性 |
 
 ### 示例
 

@@ -117,6 +117,25 @@
         - a
         - 2
         - 3
+      bindValue:
+        type: object
+        body:
+          a:
+            keyA:
+              name: keyA
+              type: object
+              body:
+                tokenA:
+                  name: tokenA
+                  type: text
+          2:
+            key2:
+              name:key2
+              type: object
+              body:
+                token:
+                  name2: token2
+                  type: text
     select2:
       name: Select2
       desp: Testing2
