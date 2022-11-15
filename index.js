@@ -329,13 +329,13 @@
     });
     return config;
   }
-  function generateBody(preId, name, options, parentType, bindValue) {
+  function generateBody(preId, name, options, parentType, bindName, bindValue) {
     const id = `${preId}-${name}`;
 
     // text
     if (options.type === 'text') {
       if (options.inputType === 'textarea') {
-        $(`#config-${preId}`).append(`<div class="mb-3" ${parentType === 'single-select' ? ` style="display: none;" bind-value="${bindValue}"` : ''}>
+        $(`#config-${preId}`).append(`<div class="mb-3" ${parentType === 'single-select' ? ` style="display: none;" bind-name="${bindName}" bind-value="${bindValue}"` : ''}>
           <label for="${id}" class="form-label">
             ${options.name || name}${options.required ? '<font style="color:red;" title="Required">*</font>' : ''}
             ${`${options.validation}` ? '<font style="color:blue;" title="RegExp Validation">!</font>' : ''}
@@ -356,7 +356,7 @@
         return;
       }
 
-      $(`#config-${preId}`).append(`<div class="mb-3" ${parentType === 'single-select' ? ` style="display: none;" bind-value="${bindValue}"` : ''}>
+      $(`#config-${preId}`).append(`<div class="mb-3" ${parentType === 'single-select' ? ` style="display: none;" bind-name="${bindName}" bind-value="${bindValue}"` : ''}>
         <label for="${id}" class="form-label">${options.name || name}${options.required ? '<font style="color:red;" title="Required">*</font>' : ''}
             ${options.validation ? '<font style="color:blue;" title="RegExp Validation">!</font>' : ''}
             ${(parentType === 'array' && options.repeat === true) ? `<button type="button"
@@ -378,7 +378,7 @@
 
     // boolean
     if (options.type === 'boolean') {
-      $(`#config-${preId}`).append(`<div class="form-check form-switch mb-3" ${parentType === 'single-select' ? ` style="display: none;" bind-value="${bindValue}"` : ''}>
+      $(`#config-${preId}`).append(`<div class="form-check form-switch mb-3" ${parentType === 'single-select' ? ` style="display: none;" bind-name="${bindName}" bind-value="${bindValue}"` : ''}>
         <input class="form-check-input" type="checkbox" role="switch" id="${id}" name="${name}" data-parent="${preId}"
           ${options.desp ? ` aria-describedby="help-${id}"` : ''}
           ${options.defaultValue ? ' checked="checked"' : ''}
@@ -394,7 +394,7 @@
 
     // single-select
     if (options.type === 'single-select') {
-      $(`#config-${preId}`).append(`<div class="mb-3" ${parentType === 'single-select' ? ` style="display: none;" bind-value="${bindValue}"` : ''}>
+      $(`#config-${preId}`).append(`<div class="mb-3" ${parentType === 'single-select' ? ` style="display: none;" bind-name="${bindName}" bind-value="${bindValue}"` : ''}>
         <label class="form-select-label" for="${id}">${options.name || name}${(parentType === 'array' && options.repeat === true) ? `<button type="button"
           class="btn btn-outline-primary repeat" data-id="${id}" data-name="${name}"
           style="--bs-btn-padding-y: 0rem; --bs-btn-padding-x: .3rem;--bs-btn-font-size: .55rem;border-radius: 50%;margin-left: .5rem;">+</button>` : ''}
@@ -407,21 +407,40 @@
         ${options.desp ? `<div id="help-${id}" class="form-text">${options.desp}</div>` : ''}
       </div>`);
       if (options.bindValue) {
-        $(`#${id}`).data('bindData', options.bindValue.body);
-        $(`#${id}`).change(function () {
-          $(`#config-${preId} [bind-value="${name}"]`).remove();
-          const data = $(this).data('bindData')[$(this).val()];
+        if (options.bindValue.isChildren) {
+          $(`#${id}`).data('bindData', options.bindValue.body);
+          $(`#${id}`).change(function () {
+            $(`#config-${preId} [bind-value="${name}"]`).remove();
+            const data = $(this).data('bindData')[$(this).val()];
+            if (data) {
+              Object.entries(data).forEach(([subName, subOptions]) => {
+                generateBody(preId, subName, subOptions, options.type, '', name);
+              });
+              $(`#config-${preId} [bind-value="${name}"]`).show();
+            }
+          });
+          const data = options.bindValue.body[options.defaultValue];
           if (data) {
             Object.entries(data).forEach(([subName, subOptions]) => {
-              generateBody(`${preId}`, subName, subOptions, options.type, name);
+              generateBody(preId, subName, subOptions, options.type, '', name);
             });
+            $(`#config-${preId} [bind-value="${name}"]`).show();
           }
+          return;
+        }
+        $(`#${id}`).data('bindData', options.bindValue.body);
+        $(`#${id}`).change(function () {
+          $(`#config-${preId} [bind-name="${name}"]`).hide();
+          $(`#config-${preId} [bind-value="${$(this).val()}"]`).show();
+        });
+        Object.entries(options.bindValue.body).forEach(([bindValue, data]) => {
+          Object.entries(data).forEach(([subName, subOptions]) => {
+            generateBody(preId, subName, subOptions, options.type, name, bindValue);
+          });
         });
         const data = options.bindValue.body[options.defaultValue];
         if (data) {
-          Object.entries(data).forEach(([subName, subOptions]) => {
-            generateBody(`${preId}`, subName, subOptions, options.type, name);
-          });
+          $(`#config-${preId} [bind-value="${options.defaultValue}"]`).show();
         }
       }
       return;
@@ -429,7 +448,7 @@
 
     // multi-select
     if (options.type === 'multi-select') {
-      $(`#config-${preId}`).append(`<div class="mb-3" ${parentType === 'single-select' ? ` style="display: none;" bind-value="${bindValue}"` : ''}>
+      $(`#config-${preId}`).append(`<div class="mb-3" ${parentType === 'single-select' ? ` style="display: none;" bind-name="${bindName}" bind-value="${bindValue}"` : ''}>
         <label class="form-select-label" for="${id}">${options.name || name}${(parentType === 'array' && options.repeat === true) ? `<button type="button"
           class="btn btn-outline-primary repeat" data-id="${id}" data-name="${name}"
           style="--bs-btn-padding-y: 0rem; --bs-btn-padding-x: .3rem;--bs-btn-font-size: .55rem;border-radius: 50%;margin-left: .5rem;">+</button>` : ''}
@@ -447,8 +466,8 @@
 
     // object
     if (options.type === 'object') {
-      $(`#config-${preId}`).append(`<div class="card card-body" style="padding-bottom:0;margin-bottom:1rem${parentType === 'single-select' ? 'display: none;' : ''}"
-      ${parentType === 'single-select' ? ` bind-value="${bindValue}"` : ''}>
+      $(`#config-${preId}`).append(`<div class="card card-body" style="padding-bottom:0;margin-bottom:1rem;${parentType === 'single-select' ? 'display: none;' : ''}"
+      ${parentType === 'single-select' ? ` bind-name="${bindName}" bind-value="${bindValue}"` : ''}>
         <p style="text-align:center;margin-bottom:0;"">
           <a class="btn btn-primary" data-bs-toggle="collapse" href="#config-${preId}-${name}" role="button" aria-expanded="true"
             aria-controls="config-${preId}-${name}" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="custom-tooltip"
@@ -469,7 +488,7 @@
     // array
     if (options.type === 'array') {
       $(`#config-${preId}`).append(`<div class="card card-body" style="padding-bottom:0;margin-bottom:1rem;${parentType === 'single-select' ? 'display: none;' : ''}"
-      ${parentType === 'single-select' ? ` bind-value="${bindValue}"` : ''}>
+      ${parentType === 'single-select' ? ` bind-name="${bindName}" bind-value="${bindValue}"` : ''}>
         <p style="text-align:center;margin-bottom:0;">
           <a class="btn btn-primary" data-bs-toggle="collapse" href="#config-${preId}-${name}" role="button" aria-expanded="true"
             aria-controls="config-${preId}-${name}" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="custom-tooltip"

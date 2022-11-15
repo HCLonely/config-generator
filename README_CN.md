@@ -3,6 +3,8 @@
 > 一个简单的配置文件生成器。
 >
 > <https://configer.hclonely.com/>
+>
+> 代码比较乱，先这样吧，等有时间再重构
 
 [Document](/README.md) | [简体中文](/README_CN.md)
 
